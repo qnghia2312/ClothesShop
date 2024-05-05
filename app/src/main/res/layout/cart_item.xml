@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/cart_image"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginEnd="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/nameCartItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textStyle="bold"
+                android:text="null"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total: "
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/totalPriceCartItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textStyle="bold"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="Size: "/>
+            <TextView
+                android:id="@+id/textViewSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="M"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonDecrease"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="-" />
+
+            <TextView
+                android:id="@+id/quantityCartItem"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="16sp"
+                android:inputType="number"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <Button
+                android:id="@+id/buttonIncrease"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:text="+"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnViewDetailsCart"
+                android:layout_width="50dp"
+                android:layout_height="70dp"
+                android:layout_gravity="right"
+                android:src="@drawable/baseline_find_in_page_24" />
+
+            <ImageButton
+                android:id="@+id/btnDeleteCart"
+                android:layout_width="50dp"
+                android:layout_height="70dp"
+                android:layout_gravity="end"
+                android:src="@drawable/baseline_delete_24" />
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btnThanhToan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#FFFC01"
+            android:text="Thanh toán"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:textSize="10dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

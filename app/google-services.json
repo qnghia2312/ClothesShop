@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "376625280662",
+    "firebase_url": "https://clothes-shop-1944f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "clothes-shop-1944f",
+    "storage_bucket": "clothes-shop-1944f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:376625280662:android:c537e51467409261c974b7",
+        "android_client_info": {
+          "package_name": "com.example.clothes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDB_9-ADhZlO3XPbuektSeQhC9rhvxGRpE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

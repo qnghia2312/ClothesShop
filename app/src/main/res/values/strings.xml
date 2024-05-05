@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Clothes</string>
+    <string name="title_home">Home</string>
+    <string name="title_product">Product</string>
+    <string name="title_cart">Cart</string>
+    <string name="title_order">Order</string>
+    <string name="title_product_details">Product Details</string>
+    <string name="title_order_detail">Order Details</string>
+    <string name="title_login">LOGIN</string>
+    <string name="title_register">REGISTER</string>
+</resources>

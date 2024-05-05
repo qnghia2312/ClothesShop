@@ -1,0 +1,34 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    >
+
+    <RadioGroup
+        android:id="@+id/paymentMethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkedButton="@id/radioButtonPaymentOnDelivery">
+
+        <RadioButton
+            android:id="@+id/radioButtonPaymentOnDelivery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thanh toán khi nhận hàng"/>
+
+        <RadioButton
+            android:id="@+id/radioButtonPaymentZaloPay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thanh toán ZaloPay"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonConfirmMethod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận"
+        android:layout_margin="16dp"/>
+</LinearLayout>
