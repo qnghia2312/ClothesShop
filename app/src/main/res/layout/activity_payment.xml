@@ -99,6 +99,32 @@
                     android:layout_gravity="center"
                     />
             </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/btnGetLocation"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:text="GET"
+                    android:layout_marginStart="70dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    />
+
+                <Button
+                    android:id="@+id/btnChooseLocation"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:text="CHOOSE"
+                    android:layout_marginEnd="70dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -167,15 +193,28 @@
                 android:layout_height="25dp"
                 android:background="#DBCFF1"
                 android:text="  Phương thức thanh toán" />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/payment_methods"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="Chọn phương thức thanh toán"
-                style="@style/Widget.MaterialComponents.Chip.Action"
-                android:textSize="20sp"
-                app:chipIcon="@drawable/customer"
-                android:textAlignment="center"/>
+
+            <RadioGroup
+                android:id="@+id/paymentMethod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkedButton="@id/radioButtonPaymentOnDelivery"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_pttt">
+
+                <RadioButton
+                    android:id="@+id/radioButtonPaymentOnDelivery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thanh toán khi nhận hàng" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonPaymentZaloPay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thanh toán ZaloPay" />
+            </RadioGroup>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
@@ -241,7 +280,7 @@
                 android:text="  Cảm ơn quý khách đặt mua" />
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="300dp"/>
+                android:layout_height="100dp"/>
         </LinearLayout>
     </ScrollView>
     <LinearLayout

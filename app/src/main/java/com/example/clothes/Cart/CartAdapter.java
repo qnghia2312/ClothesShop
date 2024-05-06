@@ -20,7 +20,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartHolder> {
     public interface CartAdapterListener {
         void onDeleteItemClick(int position);
         void onDetailsItemClick(int position);
-        void onPayItemClick(int position, int totalPrice);
+
         void IncreaseItem(int position);
         void DecreaseItem(int position);
         void ShowDetail(int position);

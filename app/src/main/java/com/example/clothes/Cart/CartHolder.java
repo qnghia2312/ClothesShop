@@ -15,7 +15,7 @@ public class CartHolder  extends RecyclerView.ViewHolder {
     private ImageView img;
     private TextView name, price, quantity, size;
     ImageButton btnViewDetailsCart, btnDeleteCart;
-    Button btnThanhToan, buttonDecrease, buttonIncrease, btnPayAll;
+    Button buttonDecrease, buttonIncrease, btnPayAll;
     TextView totalPriceCartItem, quantityCartItem;
 
 
@@ -27,7 +27,6 @@ public class CartHolder  extends RecyclerView.ViewHolder {
         quantity = itemView.findViewById(R.id.quantityCartItem);
         btnViewDetailsCart = itemView.findViewById(R.id.btnViewDetailsCart);
         btnDeleteCart = itemView.findViewById(R.id.btnDeleteCart);
-        btnThanhToan = itemView.findViewById(R.id.btnThanhToan);
         totalPriceCartItem = itemView.findViewById(R.id.totalPriceCartItem);
         quantityCartItem = itemView.findViewById(R.id.quantityCartItem);
         buttonIncrease  = itemView.findViewById(R.id.buttonIncrease);
@@ -54,25 +53,6 @@ public class CartHolder  extends RecyclerView.ViewHolder {
                     int position = getAbsoluteAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         adapterListener.onDeleteItemClick(position);
-                    }
-                }
-            }
-        });
-
-        btnThanhToan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (adapterListener != null) {
-                    int position = getAbsoluteAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        try{
-                            int totalPrice = Integer.parseInt(totalPriceCartItem.getText().toString());
-                            adapterListener.onPayItemClick(position, totalPrice);
-                        } catch (NumberFormatException e){
-                            // lỗi
-
-                        }
-
                     }
                 }
             }
