@@ -132,15 +132,7 @@
         </LinearLayout>
 
 
-        <Button
-            android:id="@+id/btnThanhToan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#FFFC01"
-            android:text="Thanh toán"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:textSize="10dp" />
+
 
     </LinearLayout>
 
