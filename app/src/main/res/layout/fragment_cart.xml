@@ -1,34 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".Cart.CartFragment">
+
+    <!--    android:layout_marginBottom="170dp"-->
+
+    <!--    android:layout_marginBottom="130dp"-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerCart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnPayAll"
-        app:layout_constraintTop_toTopOf="parent"
-
-        />
-<!--    android:layout_marginBottom="170dp"-->
+        android:layout_height="500dp"
+        android:layout_marginBottom="30dp" />
 
     <Button
         android:id="@+id/btnPayAll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
         android:text="Pay All"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-
-        />
-<!--    android:layout_marginBottom="130dp"-->
+        android:textStyle="bold" />
 
     <include
         android:id="@+id/paymentMethodLayout"
@@ -40,4 +35,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
