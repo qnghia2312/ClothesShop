@@ -114,18 +114,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/btnViewDetailsCart"
-                android:layout_width="50dp"
+                android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="right"
                 android:src="@drawable/baseline_find_in_page_24" />
 
             <ImageButton
                 android:id="@+id/btnDeleteCart"
-                android:layout_width="50dp"
+                android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="end"
                 android:src="@drawable/baseline_delete_24" />
