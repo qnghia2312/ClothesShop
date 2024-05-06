@@ -32,7 +32,6 @@ public class CartHolder  extends RecyclerView.ViewHolder {
         buttonIncrease  = itemView.findViewById(R.id.buttonIncrease);
         buttonDecrease = itemView.findViewById(R.id.buttonDecrease);
         size = itemView.findViewById(R.id.textViewSize);
-//        btnPayAll = itemView.findViewById(R.id.btnPayAll);
 
         btnViewDetailsCart.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -359,7 +359,6 @@ public class Payment extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot cartItem : snapshot.getChildren()){
-                    Toast.makeText(Payment.this, "ondtchange of cartQuery", Toast.LENGTH_LONG).show();
                     Cart cart = cartItem.getValue(Cart.class);
 
                     DatabaseReference newOrderDetailRef = orderDetailsRef.child(newId);
