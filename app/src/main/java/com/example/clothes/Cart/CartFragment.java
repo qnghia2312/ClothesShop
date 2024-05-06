@@ -49,10 +49,10 @@ import org.json.JSONObject;
 
 
 import ZaloPay.Api.CreateOrder;
-import vn.zalopay.sdk.ZaloPayError;
-import vn.zalopay.sdk.ZaloPaySDK;
-import vn.zalopay.sdk.Environment;
-import vn.zalopay.sdk.listeners.PayOrderListener;
+//import vn.zalopay.sdk.ZaloPayError;
+//import vn.zalopay.sdk.ZaloPaySDK;
+//import vn.zalopay.sdk.Environment;
+//import vn.zalopay.sdk.listeners.PayOrderListener;
 public class CartFragment extends Fragment {
     String user_id = DataLogin.id1;
 
@@ -74,7 +74,9 @@ public class CartFragment extends Fragment {
         btnPayAll.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                PayForAll(totalCost);
+                Intent intent = new Intent(view.getContext(), Payment.class);
+                startActivity(intent);
+                //PayForAll(totalCost);
             }
         });
 
@@ -379,32 +381,32 @@ public class CartFragment extends Fragment {
     }
 
     private void thanhToanZaloPay(int price) throws Exception {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        ZaloPaySDK.init(2553, Environment.SANDBOX);
-        try {
-            CreateOrder orderApi = new CreateOrder();
-            JSONObject data = orderApi.createOrder(String.valueOf(price));
-
-            String code=data.getString("return_code");
-            if (code.equals("1")) {
-                String token = data.getString("zp_trans_token");
-                ZaloPaySDK.getInstance().payOrder(requireActivity(), token, "demozpdk://app", new PayOrderListener() {
-                    @Override
-                    public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-
-                    }
-                    @Override
-                    public void onPaymentCanceled(String s, String s1) {
-                    }
-                    @Override
-                    public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
-                    }
-                });
-            }
-        }
-        catch (Exception e) {
-        }
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+//        ZaloPaySDK.init(2553, Environment.SANDBOX);
+//        try {
+//            CreateOrder orderApi = new CreateOrder();
+//            JSONObject data = orderApi.createOrder(String.valueOf(price));
+//
+//            String code=data.getString("return_code");
+//            if (code.equals("1")) {
+//                String token = data.getString("zp_trans_token");
+//                ZaloPaySDK.getInstance().payOrder(requireActivity(), token, "demozpdk://app", new PayOrderListener() {
+//                    @Override
+//                    public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
+//
+//                    }
+//                    @Override
+//                    public void onPaymentCanceled(String s, String s1) {
+//                    }
+//                    @Override
+//                    public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+//                    }
+//                });
+//            }
+//        }
+//        catch (Exception e) {
+//        }
 
     }
 
