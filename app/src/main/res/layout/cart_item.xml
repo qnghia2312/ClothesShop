@@ -24,13 +24,13 @@
 
             <TextView
                 android:id="@+id/nameCartItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textStyle="bold"
                 android:text="null"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

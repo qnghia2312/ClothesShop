@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.clothes.Model.Cart;
+import com.example.clothes.Model.Product;
 import com.example.clothes.R;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartHolder> {
 
     public interface CartAdapterListener {
         void onDeleteItemClick(int position);
+
+        void onDetailsItemClick(int position);
+
         void IncreaseItem(int position);
         void DecreaseItem(int position);
         void ShowDetail(int position);

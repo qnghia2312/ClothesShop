@@ -4,14 +4,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,11 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.clothes.DataLogin;
 import com.example.clothes.Model.Cart;
 import com.example.clothes.Model.Product;
-import com.example.clothes.Product.ProductDetailsActivity;
 import com.example.clothes.R;
 import com.example.clothes.Setting.ItemOffset;
 import com.example.clothes.databinding.FragmentCartBinding;
-import com.example.clothes.Model.order;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,23 +30,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 
-import org.json.JSONObject;
-
-
-import ZaloPay.Api.CreateOrder;
-import vn.zalopay.sdk.Environment;
-import vn.zalopay.sdk.ZaloPayError;
-import vn.zalopay.sdk.ZaloPaySDK;
-import vn.zalopay.sdk.listeners.PayOrderListener;
+//import vn.zalopay.sdk.Environment;
+//import vn.zalopay.sdk.ZaloPayError;
+//import vn.zalopay.sdk.ZaloPaySDK;
+//import vn.zalopay.sdk.listeners.PayOrderListener;
 
 //import vn.zalopay.sdk.ZaloPayError;
 //import vn.zalopay.sdk.ZaloPaySDK;
@@ -153,6 +140,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot productSnapshot) {
                         Map<String, Product> products = new HashMap<>();
+                        int cost=0;
                         for (DataSnapshot childSnapshot : productSnapshot.getChildren()) {
                             Product product = childSnapshot.getValue(Product.class);
                             products.put(product.getId(), product);
@@ -165,8 +153,15 @@ public class CartFragment extends Fragment {
                             if (product != null) {
                                 cart.setName(product.getName());
                                 cart.setImage(product.getImage());
-                                cart.setPrice(product.getPrice());
-                                double cost = product.getPrice()*cart.getQuantity();
+                                if(product.getDiscountP()==0){
+                                    cart.setPrice(product.getPrice());
+                                    cost = product.getPrice()*cart.getQuantity();
+                                }else{
+                                    int dCost = product.getPrice() - (product.getPrice()*product.getDiscountP()/100);
+                                    cart.setPrice(dCost);
+                                    cost = dCost*cart.getQuantity();
+                                }
+
                                 totalCost.addAndGet(cost);
                             }
                         }

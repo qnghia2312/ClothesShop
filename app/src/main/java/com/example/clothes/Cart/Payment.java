@@ -54,11 +54,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import ZaloPay.Api.CreateOrder;
-import vn.zalopay.sdk.Environment;
-import vn.zalopay.sdk.ZaloPayError;
-import vn.zalopay.sdk.ZaloPaySDK;
-import vn.zalopay.sdk.listeners.PayOrderListener;
+//import ZaloPay.Api.CreateOrder;
+//import vn.zalopay.sdk.Environment;
+//import vn.zalopay.sdk.ZaloPayError;
+//import vn.zalopay.sdk.ZaloPaySDK;
+//import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class Payment extends AppCompatActivity {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
@@ -150,6 +150,7 @@ public class Payment extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot productSnapshot) {
                         Map<String, Product> products = new HashMap<>();
+                        int cost=0;
                         for (DataSnapshot childSnapshot : productSnapshot.getChildren()) {
                             Product product = childSnapshot.getValue(Product.class);
                             products.put(product.getId(), product);
@@ -162,9 +163,16 @@ public class Payment extends AppCompatActivity {
                             if (product != null) {
                                 cart.setName(product.getName());
                                 cart.setImage(product.getImage());
-                                cart.setPrice(product.getPrice());
-                                int cost = product.getPrice()*cart.getQuantity();
-                                totalCost += cost;
+                                if(product.getDiscountP()==0){
+                                    cart.setPrice(product.getPrice());
+                                    cost = product.getPrice()*cart.getQuantity();
+                                    totalCost += cost;
+                                }else{
+                                    int dCost = product.getPrice() - (product.getPrice()*product.getDiscountP()/100);
+                                    cart.setPrice(dCost);
+                                    cost = dCost*cart.getQuantity();
+                                    totalCost += cost;
+                                }
                             }
                         }
                         priceShow.setText("đ."+ totalCost);
@@ -380,32 +388,32 @@ public class Payment extends AppCompatActivity {
     }
 
     private void thanhToanZaloPay(int price) throws Exception {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        ZaloPaySDK.init(2553, Environment.SANDBOX);
-        try {
-            CreateOrder orderApi = new CreateOrder();
-            JSONObject data = orderApi.createOrder(String.valueOf(price));
-
-            String code=data.getString("return_code");
-            if (code.equals("1")) {
-                String token = data.getString("zp_trans_token");
-                ZaloPaySDK.getInstance().payOrder(Payment.this, token, "demozpdk://app", new PayOrderListener() {
-                    @Override
-                    public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-
-                    }
-                    @Override
-                    public void onPaymentCanceled(String s, String s1) {
-                    }
-                    @Override
-                    public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
-                    }
-                });
-            }
-        }
-        catch (Exception e) {
-        }
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+//        ZaloPaySDK.init(2553, Environment.SANDBOX);
+//        try {
+//            CreateOrder orderApi = new CreateOrder();
+//            JSONObject data = orderApi.createOrder(String.valueOf(price));
+//
+//            String code=data.getString("return_code");
+//            if (code.equals("1")) {
+//                String token = data.getString("zp_trans_token");
+//                ZaloPaySDK.getInstance().payOrder(Payment.this, token, "demozpdk://app", new PayOrderListener() {
+//                    @Override
+//                    public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
+//
+//                    }
+//                    @Override
+//                    public void onPaymentCanceled(String s, String s1) {
+//                    }
+//                    @Override
+//                    public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+//                    }
+//                });
+//            }
+//        }
+//        catch (Exception e) {
+//        }
 
     }
 }
