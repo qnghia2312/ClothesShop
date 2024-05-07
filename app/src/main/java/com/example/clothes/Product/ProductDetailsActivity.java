@@ -304,8 +304,6 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         });
 
-
-
     }
 
     private void LinkDetails() {

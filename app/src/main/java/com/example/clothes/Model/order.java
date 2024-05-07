@@ -10,11 +10,11 @@ public class order implements Serializable {
     private int totalPrice;
     private int status;
     private String payment;
-
+    private String  address;
     public order() {
     }
 
-    public order(String id, String user_id, String createAt, String updateAt, int totalPrice, int status, String payment) {
+    public order(String id, String user_id, String createAt, String updateAt, int totalPrice, int status, String payment, String address) {
         this.id = id;
         this.user_id = user_id;
         this.createAt = createAt;
@@ -22,6 +22,7 @@ public class order implements Serializable {
         this.totalPrice = totalPrice;
         this.status = status;
         this.payment = payment;
+        this.address = address;
     }
 
     public String getId() {
@@ -78,5 +79,13 @@ public class order implements Serializable {
 
     public void setPayment(String payment) {
         this.payment = payment;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

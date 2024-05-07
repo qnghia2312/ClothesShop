@@ -6,12 +6,18 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +28,7 @@ import com.example.clothes.Model.Product;
 import com.example.clothes.Model.User;
 import com.example.clothes.Model.discountOnOrder;
 import com.example.clothes.Model.importOrder;
+import com.example.clothes.Model.order;
 import com.example.clothes.Model.size_stock;
 import com.example.clothes.R;
 import com.example.clothes.Setting.ItemOffset;
@@ -34,14 +41,24 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
+import ZaloPay.Api.CreateOrder;
+import vn.zalopay.sdk.Environment;
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class Payment extends AppCompatActivity {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
@@ -54,7 +71,7 @@ public class Payment extends AppCompatActivity {
     ImageButton btnBack;
     TextView name, phone, address, priceShow, totalPrice, discountPrice, fPrice2, fPrice;
     RecyclerView show;
-    Chip paymentMethod;
+    RadioGroup paymentMethod;
     Button btnPay;
     Spinner voucher;
     List<Cart> items = new ArrayList<>();
@@ -82,7 +99,7 @@ public class Payment extends AppCompatActivity {
         fPrice2 = findViewById(R.id.payment_finalPrice2);
         fPrice = findViewById(R.id.finalPrice);
         show = findViewById(R.id.payment_show);
-        paymentMethod = findViewById(R.id.payment_methods);
+        paymentMethod = findViewById(R.id.paymentMethod);
         btnPay = findViewById(R.id.payment_order);
         voucher = findViewById(R.id.payment_Vocher);
         list_discount.add(" ");
@@ -152,6 +169,9 @@ public class Payment extends AppCompatActivity {
                         }
                         priceShow.setText("đ."+ totalCost);
                         totalPrice.setText("đ."+ totalCost);
+                        fPrice.setText("đ."+ totalCost);
+                        fPrice2.setText("đ."+ totalCost);
+                        fp = totalCost;
                         // Cập nhật adapter sau khi lấy được dữ liệu sản phẩm
                         adapter.notifyDataSetChanged();
                     }
@@ -234,6 +254,8 @@ public class Payment extends AppCompatActivity {
                     fPrice.setText("Tổng thanh toán \n đ."+ totalCost);
                     discountPrice.setText("đ.0");
                     fPrice2.setText("đ."+ totalCost);
+
+                    fp = totalCost;
                 }
                 else{
                     discountOnOrder discount = discountOnOrderList.get(i-1);
@@ -248,6 +270,7 @@ public class Payment extends AppCompatActivity {
                         fPrice2.setText("đ."+ fp);
                     }
                 }
+//                Toast.makeText(Payment.this, "total: " + fp, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -255,5 +278,134 @@ public class Payment extends AppCompatActivity {
                 Toast.makeText(Payment.this, "Không thể kết nối", Toast.LENGTH_SHORT).show();
             }
         });
+
+        btnPay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Toast.makeText(Payment.this, "total: " + fp, Toast.LENGTH_LONG).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(Payment.this);
+                builder.setTitle("Payment Confirmation");
+                builder.setMessage("The total amount is " + fp + "đ. Do you want to continue?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int selectedMethodId = paymentMethod.getCheckedRadioButtonId();
+                        RadioButton selected = findViewById(selectedMethodId);
+                        String method = selected.getText().toString();
+
+                        boolean confirm = false;
+                        if(method.equals("Thanh toán khi nhận hàng")){
+                            Toast.makeText(Payment.this, "Thanh toán khi nhận hàng: " + fp, Toast.LENGTH_LONG).show();
+                            confirm = true;
+                        }else if(method.equals("Thanh toán ZaloPay")){
+                            //Thanh toán
+                            try {
+                                thanhToanZaloPay(fp);
+                                confirm = true;
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+//                        Toast.makeText(Payment.this, "confirm: "+ confirm, Toast.LENGTH_LONG).show();
+                        if(confirm){
+                            addToNewOrder(fp, method);
+                            btnBack.callOnClick();
+                        }else{
+                            Toast.makeText(Payment.this, "Lỗi confirm. confirm  = "+ confirm, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        });
+
+
+    }
+
+    private void addToNewOrder(int fp, String method) {
+        Query cartQuery = reference.orderByChild("user_id").equalTo(user_id);
+
+        DatabaseReference orderRef = FirebaseDatabase.getInstance().getReference("order");
+        DatabaseReference orderDetailsRef = FirebaseDatabase.getInstance().getReference("orderDetail");
+
+        order ord = new order();
+        String newId = orderRef.push().getKey();
+        ord.setId(newId);
+        ord.setStatus(1);
+        ord.setUser_id(user_id);
+
+        ord.setTotalPrice(fp);
+        Date currentdate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String formatted = dateFormat.format(currentdate);
+        ord.setCreateAt(formatted);
+        ord.setUpdateAt(formatted);
+        ord.setPayment(method);
+        ord.setAddress(String.valueOf(address.getText()));
+
+        orderRef.child(newId).setValue(ord);
+
+
+        cartQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot cartItem : snapshot.getChildren()){
+                    Cart cart = cartItem.getValue(Cart.class);
+
+                    DatabaseReference newOrderDetailRef = orderDetailsRef.child(newId);
+                    // Thêm dữ liệu cho từng nhánh con
+                    newOrderDetailRef.child(cart.getProduct_id()).child(cart.getSize()).setValue(cart.getQuantity());
+
+                    cartItem.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
+    }
+
+    private void thanhToanZaloPay(int price) throws Exception {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        ZaloPaySDK.init(2553, Environment.SANDBOX);
+        try {
+            CreateOrder orderApi = new CreateOrder();
+            JSONObject data = orderApi.createOrder(String.valueOf(price));
+
+            String code=data.getString("return_code");
+            if (code.equals("1")) {
+                String token = data.getString("zp_trans_token");
+                ZaloPaySDK.getInstance().payOrder(Payment.this, token, "demozpdk://app", new PayOrderListener() {
+                    @Override
+                    public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
+
+                    }
+                    @Override
+                    public void onPaymentCanceled(String s, String s1) {
+                    }
+                    @Override
+                    public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+                    }
+                });
+            }
+        }
+        catch (Exception e) {
+        }
+
     }
 }
