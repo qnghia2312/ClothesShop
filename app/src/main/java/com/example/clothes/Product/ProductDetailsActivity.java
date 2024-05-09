@@ -34,8 +34,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
     private String productId;
 
     private TextView textViewProductName, textViewProductPrice, textViewDescription, textViewCategory,
-            ViewMaterial, textViewOrigin;
-    private View viewColor;
+            ViewMaterial, textViewOrigin, tvColor;
+
     private EditText editTextQuantity;
 
     private ImageView imageViewProduct;
@@ -105,6 +105,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                         Glide.with(ProductDetailsActivity.this).load(product.getImage()).into(imageViewProduct);
                         textViewDescription.setText("   " + product.getDescription());
                         textViewCategory.setText(product.getCategory());
+                        tvColor.setText(product.getColor());
 //                viewColor.setBackgroundColor(Color.parseColor(product.getColor())); //màu
                         ViewMaterial.setText(product.getMaterial());
                         textViewOrigin.setText(product.getOrigin());
@@ -311,10 +312,10 @@ public class ProductDetailsActivity extends AppCompatActivity {
         textViewProductName = findViewById(R.id.textViewProductName);
         textViewProductPrice = findViewById(R.id.textViewProductPrice);
         imageViewProduct = findViewById(R.id.imageViewProduct);
+        tvColor = findViewById(R.id.tvColor);
         textViewDescription = findViewById(R.id.textViewDescription);
         textViewCategory = findViewById(R.id.textViewCategory);
         ViewMaterial = findViewById(R.id.ViewMaterial);
-        viewColor = findViewById(R.id.viewColor);
         textViewOrigin = findViewById(R.id.textViewOrigin);
         editTextQuantity = findViewById(R.id.editTextQuantity);
         //nút tăng giảm số lượng

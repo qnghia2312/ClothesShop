@@ -1,7 +1,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#DBECAC"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -149,17 +151,12 @@
                 android:layout_height="wrap_content"
                 android:text="Màu sắc:   "
                 android:textSize="18sp"/>
-                <FrameLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#000000"
-                    android:padding="2dp">
-                    <View
-                        android:id="@+id/viewColor"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:background="#FFFFFF"/>
-                </FrameLayout>
+            <TextView
+                android:id="@+id/tvColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp" />
+
         </LinearLayout>
 
         <LinearLayout

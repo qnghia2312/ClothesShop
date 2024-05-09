@@ -1,20 +1,31 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Product.ProductsFragment">
-
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerProducts"
+    android:layout_height="match_parent">
+    <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".Product.ProductsFragment"
+        android:orientation="vertical"
+        android:background="#EDE067"
+        >
 
-        />
-<!--    android:layout_marginBottom="130dp"-->
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100dp"/>
+    <!--    android:layout_marginBottom="130dp"-->
 
 
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -165,7 +165,7 @@ public class RegisterActivity extends AppCompatActivity {
                     gender_str = "Nữ";
                 }
                 else {
-                    gender_str = "Giới tính khác";
+                    gender_str = "Khác";
                 }
             }
 
@@ -179,7 +179,7 @@ public class RegisterActivity extends AppCompatActivity {
     {
         data_genders.add("Nam");
         data_genders.add("Nữ");
-        data_genders.add("Giới tính khác");
+        data_genders.add("Khác");
     }
 
     private void init()

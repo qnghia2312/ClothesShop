@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.View;
@@ -42,6 +44,10 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,6 +66,16 @@ import vn.zalopay.sdk.ZaloPayError;
 import vn.zalopay.sdk.ZaloPaySDK;
 import vn.zalopay.sdk.listeners.PayOrderListener;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 public class Payment extends AppCompatActivity {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     FirebaseDatabase databases = FirebaseDatabase.getInstance();
@@ -72,12 +88,15 @@ public class Payment extends AppCompatActivity {
     TextView name, phone, address, priceShow, totalPrice, discountPrice, fPrice2, fPrice;
     RecyclerView show;
     RadioGroup paymentMethod;
-    Button btnPay;
+    Button btnPay, btnGetLocation, btnChooseLocation;
+    MapView mapView;
     Spinner voucher;
     List<Cart> items = new ArrayList<>();
     List<String> list_discount = new ArrayList<>();
     List<discountOnOrder> discountOnOrderList = new ArrayList<>();
     int fp=0;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +108,8 @@ public class Payment extends AppCompatActivity {
     }
 
     private void setControl() {
+        btnGetLocation = findViewById(R.id.btnGetLocation);
+        btnChooseLocation = findViewById(R.id.btnChooseLocation);
         btnBack = findViewById(R.id.payment_back);
         name = findViewById(R.id.payment_name);
         phone = findViewById(R.id.payment_phone);
@@ -102,6 +123,8 @@ public class Payment extends AppCompatActivity {
         paymentMethod = findViewById(R.id.paymentMethod);
         btnPay = findViewById(R.id.payment_order);
         voucher = findViewById(R.id.payment_Vocher);
+        mapView = findViewById(R.id.map);
+
         list_discount.add(" ");
         show.setLayoutManager(new LinearLayoutManager(Payment.this));
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Payment.this, DividerItemDecoration.VERTICAL);
@@ -163,7 +186,7 @@ public class Payment extends AppCompatActivity {
                                 cart.setName(product.getName());
                                 cart.setImage(product.getImage());
                                 cart.setPrice(product.getPrice());
-                                int cost = product.getPrice()*cart.getQuantity();
+                                int cost =  product.getPrice()*cart.getQuantity();
                                 totalCost += cost;
                             }
                         }
@@ -328,8 +351,25 @@ public class Payment extends AppCompatActivity {
             }
         });
 
+        btnGetLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Toast.makeText(Payment.this, "Get location", Toast.LENGTH_LONG).show();
+                getLocation();
+            }
+        });
+
+        btnChooseLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(Payment.this, "Choose location", Toast.LENGTH_LONG).show();
+                chooseLocation();
+            }
+        });
 
     }
+
+
 
     private void addToNewOrder(int fp, String method) {
         Query cartQuery = reference.orderByChild("user_id").equalTo(user_id);
@@ -393,13 +433,16 @@ public class Payment extends AppCompatActivity {
                 ZaloPaySDK.getInstance().payOrder(Payment.this, token, "demozpdk://app", new PayOrderListener() {
                     @Override
                     public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
+                        Toast.makeText(Payment.this, "Thanh toán thành công!", Toast.LENGTH_LONG).show();
 
                     }
                     @Override
                     public void onPaymentCanceled(String s, String s1) {
+                        Toast.makeText(Payment.this, "Đã hủy thanh toán!", Toast.LENGTH_LONG).show();
                     }
                     @Override
                     public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+                        Toast.makeText(Payment.this, "Thanh toán thất bại!", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -408,4 +451,46 @@ public class Payment extends AppCompatActivity {
         }
 
     }
+
+    private void chooseLocation() {
+        try{
+            mapView.setVisibility(View.VISIBLE);
+            mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+            mapView.setBuiltInZoomControls(true);
+            mapView.setMultiTouchControls(true);
+            IMapController mapController = mapView.getController();
+            mapController.setZoom(14);
+            GeoPoint defaultLocation = new GeoPoint(10.84800, 106.78689);
+            mapController.setCenter(defaultLocation);
+        }catch(Exception e){
+            Toast.makeText(Payment.this, "Lỗi hiển thị map.",  Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void getLocation() {
+        if (isLocationEnabled()) {
+            try {
+                // Lấy vị trí hiện tại
+                Location lc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if(lc!=null){
+                    Toast.makeText(Payment.this, "Location: "+ lc.toString(), Toast.LENGTH_LONG).show();
+                } else{
+                    Toast.makeText(Payment.this, "null location!", Toast.LENGTH_LONG).show();
+                }
+            } catch (SecurityException e) {
+                Toast.makeText(Payment.this, "Location false", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "Vui lòng bật định vị để sử dụng chức năng này.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private boolean isLocationEnabled() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
 }

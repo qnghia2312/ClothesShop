@@ -73,7 +73,6 @@ public class CartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
         AtomicDouble totalCost = new AtomicDouble(0);
 
-        paymentMethodLayout = view.findViewById(R.id.paymentMethodLayout);
 
         btnPayAll = view.findViewById(R.id.btnPayAll);
         btnPayAll.setOnClickListener(new View.OnClickListener(){
@@ -108,10 +107,6 @@ public class CartFragment extends Fragment {
                 showDeleteDialog(position);
             }
 
-            @Override
-            public void onDetailsItemClick(int position) {
-                DetailsCart(position);
-            }
 
             @Override
             public void IncreaseItem(int position) {
