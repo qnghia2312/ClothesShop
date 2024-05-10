@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.clothes.Model.Cart;
 import com.example.clothes.R;
-
+import com.example.clothes.Model.Product;
 import java.util.List;
 
 public class CartAdapter extends RecyclerView.Adapter<CartHolder> {

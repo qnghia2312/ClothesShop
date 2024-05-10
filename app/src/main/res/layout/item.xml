@@ -58,7 +58,7 @@
                     android:text="Product price"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:maxLines="1"
+                    android:maxLines="2"
                     android:ellipsize="end"/>
             </LinearLayout>
 

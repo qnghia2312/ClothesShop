@@ -12,11 +12,12 @@ public class Product {
     private int price;
     private boolean state;
     private int stock;
+    private int discountP;
 
     public Product() {
     }
 
-    public Product(String id, String category, String color, String description, String image, String material, String name, String origin, int price, boolean state, int stock) {
+    public Product(String id, String category, String color, String description, String image, String material, String name, String origin, int price,int discountP, boolean state, int stock) {
         this.id = id;
         this.category = category;
         this.color = color;
@@ -28,8 +29,15 @@ public class Product {
         this.price = price;
         this.state = state;
         this.stock = stock;
+        this.discountP = discountP;
+    }
+    public int getDiscountP() {
+        return discountP;
     }
 
+    public void setDiscountP(int discountP) {
+        this.discountP = discountP;
+    }
     public String getId() {
         return id;
     }
