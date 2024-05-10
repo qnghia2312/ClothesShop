@@ -1,6 +1,8 @@
 package ZaloPay.Api;
 
 
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -11,7 +13,7 @@ import okhttp3.FormBody;
 import okhttp3.RequestBody;
 
 public class CreateOrder {
-    private class CreateOrderData {
+    private static class CreateOrderData {
         String AppId;
         String AppUser;
         String AppTime;
@@ -42,7 +44,6 @@ public class CreateOrder {
                     this.AppTime,
                     this.EmbedData,
                     this.Items);
-
             Mac = Helpers.getMac(AppInfo.MAC_KEY, inputHMac);
         }
     }
@@ -51,20 +52,19 @@ public class CreateOrder {
         CreateOrderData input = new CreateOrderData(amount);
 
         RequestBody formBody = new FormBody.Builder()
-                .add("app_id", input.AppId)
-                .add("app_user", input.AppUser)
-                .add("app_time", input.AppTime)
+                .add("appid", input.AppId)
+                .add("appuser", input.AppUser)
+                .add("apptime", input.AppTime)
                 .add("amount", input.Amount)
-                .add("app_trans_id", input.AppTransId)
-                .add("embed_data", input.EmbedData)
+                .add("apptransid", input.AppTransId)
+                .add("embeddata", input.EmbedData)
                 .add("item", input.Items)
-                .add("bank_code", input.BankCode)
+                .add("bankcode", input.BankCode)
                 .add("description", input.Description)
                 .add("mac", input.Mac)
                 .build();
-
-        JSONObject data = HttpProvider.sendPost(AppInfo.URL_CREATE_ORDER, formBody);
-        return data;
+        Log.d("formBody", formBody.toString());
+         return HttpProvider.sendPost(AppInfo.URL_CREATE_ORDER, formBody);
     }
 }
 

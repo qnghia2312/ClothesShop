@@ -1,16 +1,25 @@
 package com.example.clothes.Cart;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,7 +51,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +74,16 @@ import vn.zalopay.sdk.ZaloPayError;
 import vn.zalopay.sdk.ZaloPaySDK;
 import vn.zalopay.sdk.listeners.PayOrderListener;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 public class Payment extends AppCompatActivity {
     DatabaseReference database = FirebaseDatabase.getInstance().getReference();
     FirebaseDatabase databases = FirebaseDatabase.getInstance();
@@ -72,23 +96,32 @@ public class Payment extends AppCompatActivity {
     TextView name, phone, address, priceShow, totalPrice, discountPrice, fPrice2, fPrice;
     RecyclerView show;
     RadioGroup paymentMethod;
-    Button btnPay;
+    Button btnPay, btnGetLocation, btnChooseLocation;
+    MapView mapView;
     Spinner voucher;
     List<Cart> items = new ArrayList<>();
     List<String> list_discount = new ArrayList<>();
     List<discountOnOrder> discountOnOrderList = new ArrayList<>();
     int fp=0;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    int PICK_IMAGE_REQUEST= 2020;
+    Uri filePath=null;
+    String method;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
+        ZaloPaySDK.init(554, Environment.SANDBOX);
         setControl();
         setData();
         setEvent();
     }
 
     private void setControl() {
+        btnGetLocation = findViewById(R.id.btnGetLocation);
+        btnChooseLocation = findViewById(R.id.btnChooseLocation);
         btnBack = findViewById(R.id.payment_back);
         name = findViewById(R.id.payment_name);
         phone = findViewById(R.id.payment_phone);
@@ -102,6 +135,8 @@ public class Payment extends AppCompatActivity {
         paymentMethod = findViewById(R.id.paymentMethod);
         btnPay = findViewById(R.id.payment_order);
         voucher = findViewById(R.id.payment_Vocher);
+        mapView = findViewById(R.id.map);
+
         list_discount.add(" ");
         show.setLayoutManager(new LinearLayoutManager(Payment.this));
         DividerItemDecoration itemDecorator = new DividerItemDecoration(Payment.this, DividerItemDecoration.VERTICAL);
@@ -299,27 +334,18 @@ public class Payment extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         int selectedMethodId = paymentMethod.getCheckedRadioButtonId();
                         RadioButton selected = findViewById(selectedMethodId);
-                        String method = selected.getText().toString();
+                        method = selected.getText().toString();
 
-                        boolean confirm = false;
                         if(method.equals("Thanh toán khi nhận hàng")){
                             Toast.makeText(Payment.this, "Thanh toán khi nhận hàng: " + fp, Toast.LENGTH_LONG).show();
-                            confirm = true;
+                            addToNewOrder(fp, method);
+                            btnBack.callOnClick();
                         }else if(method.equals("Thanh toán ZaloPay")){
-                            //Thanh toán
                             try {
                                 thanhToanZaloPay(fp);
-                                confirm = true;
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
-                        }
-//                        Toast.makeText(Payment.this, "confirm: "+ confirm, Toast.LENGTH_LONG).show();
-                        if(confirm){
-                            addToNewOrder(fp, method);
-                            btnBack.callOnClick();
-                        }else{
-                            Toast.makeText(Payment.this, "Lỗi confirm. confirm  = "+ confirm, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -336,9 +362,34 @@ public class Payment extends AppCompatActivity {
             }
         });
 
+        btnGetLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Toast.makeText(Payment.this, "Get location", Toast.LENGTH_LONG).show();
+       //         getLocation();
+            }
+        });
+
+        btnChooseLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(Payment.this, "Choose location", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(Payment.this, MapsActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            String selectedAddress = data.getStringExtra("selectedAddress");
+            address.setText(selectedAddress);
+        }
+    }
     private void addToNewOrder(int fp, String method) {
         Query cartQuery = reference.orderByChild("user_id").equalTo(user_id);
 
@@ -390,24 +441,26 @@ public class Payment extends AppCompatActivity {
     private void thanhToanZaloPay(int price) throws Exception {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        ZaloPaySDK.init(2553, Environment.SANDBOX);
         try {
             CreateOrder orderApi = new CreateOrder();
             JSONObject data = orderApi.createOrder(String.valueOf(price));
-
-            String code=data.getString("return_code");
+            String code=data.getString("returncode");
             if (code.equals("1")) {
-                String token = data.getString("zp_trans_token");
+                String token = data.getString("zptranstoken");
                 ZaloPaySDK.getInstance().payOrder(Payment.this, token, "demozpdk://app", new PayOrderListener() {
                     @Override
                     public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-
+                        Toast.makeText(Payment.this, "Thanh toán thành công!", Toast.LENGTH_LONG).show();
+                        addToNewOrder(fp, method);
+                        btnBack.callOnClick();
                     }
                     @Override
                     public void onPaymentCanceled(String s, String s1) {
+                        Toast.makeText(Payment.this, "Đã hủy thanh toán!", Toast.LENGTH_LONG).show();
                     }
                     @Override
                     public void onPaymentError(ZaloPayError zaloPayError, String s, String s1) {
+                        Toast.makeText(Payment.this, "Thanh toán thất bại!", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -415,5 +468,36 @@ public class Payment extends AppCompatActivity {
         catch (Exception e) {
         }
 
+    }
+
+
+    private void getLocation() {
+        if (isLocationEnabled()) {
+            try {
+                // Lấy vị trí hiện tại
+                Location lc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if(lc!=null){
+                    Toast.makeText(Payment.this, "Location: "+ lc.toString(), Toast.LENGTH_LONG).show();
+                } else{
+                    Toast.makeText(Payment.this, "null location!", Toast.LENGTH_LONG).show();
+                }
+            } catch (SecurityException e) {
+                Toast.makeText(Payment.this, "Location false", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "Vui lòng bật định vị để sử dụng chức năng này.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private boolean isLocationEnabled() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ZaloPaySDK.getInstance().onResult(intent);
     }
 }
