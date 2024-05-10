@@ -48,14 +48,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        findViewById(R.id.confirmButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("selectedAddress", selectedAddress);
-                setResult(Activity.RESULT_OK, returnIntent);
-                finish();
-            }
+        findViewById(R.id.confirmButton).setOnClickListener(v -> {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("selectedAddress", selectedAddress);
+            setResult(Activity.RESULT_OK, returnIntent);
+            finish();
         });
 
         if (ActivityCompat.checkSelfPermission(
@@ -73,18 +70,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
-                            try {
-                                List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                selectedAddress = addresses.get(0).getAddressLine(0);
-                                Toast.makeText(MapsActivity.this, "Current address: " + selectedAddress, Toast.LENGTH_LONG).show();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
+                        try {
+                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            selectedAddress = addresses.get(0).getAddressLine(0);
+                            Toast.makeText(MapsActivity.this, "Current address: " + selectedAddress, Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 });
@@ -109,32 +103,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
         mMap.setMyLocationEnabled(true);
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
-                try {
-                    List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                    selectedAddress = addresses.get(0).getAddressLine(0);
-                    Toast.makeText(MapsActivity.this, "Selected address: " + selectedAddress, Toast.LENGTH_LONG).show();
+        mMap.setOnMapClickListener(latLng -> {
+            Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.getDefault());
+            try {
+                List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                selectedAddress = addresses.get(0).getAddressLine(0);
+                Toast.makeText(MapsActivity.this, "Selected address: " + selectedAddress, Toast.LENGTH_LONG).show();
 
-                    mMap.clear();
+                mMap.clear();
 
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("Selected address"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                mMap.addMarker(new MarkerOptions().position(latLng).title("Selected address"));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Marker in Current Location"));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
-                        }
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Marker in Current Location"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
                     }
                 });
     }
