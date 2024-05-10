@@ -3,7 +3,13 @@ package com.example.clothes.Product;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -101,7 +107,18 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                         //Show dữ liệu
                         textViewProductName.setText(product.getName());
-                        textViewProductPrice.setText(String.valueOf(product.getPrice()));
+                        if(product.getDiscountP()==0){
+                            textViewProductPrice.setText(product.getPrice() + ".VND");
+                        }else{
+                            SpannableString spannableString1 = new SpannableString(product.getPrice()+".VND");
+                            spannableString1.setSpan(new StrikethroughSpan(), 0, spannableString1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            int finalprice = product.getPrice() - (product.getPrice()*product.getDiscountP()/100);
+                            SpannableString spannableString2 = new SpannableString(finalprice+".VND");
+                            spannableString2.setSpan(new ForegroundColorSpan(Color.RED), 0, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            CharSequence combinedText = TextUtils.concat(spannableString1, " -> ", spannableString2);
+                            textViewProductPrice.setText(combinedText);
+                        }
+                        //textViewProductPrice.setText(String.valueOf(product.getPrice()));
                         Glide.with(ProductDetailsActivity.this).load(product.getImage()).into(imageViewProduct);
                         textViewDescription.setText("   " + product.getDescription());
                         textViewCategory.setText(product.getCategory());

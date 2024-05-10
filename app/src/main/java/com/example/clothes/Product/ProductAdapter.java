@@ -5,6 +5,12 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StrikethroughSpan;
 
 import java.util.List;
 
@@ -31,18 +37,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductHolder> {
     @Override
     public ProductHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        return new ProductHolder(LayoutInflater.from(context).inflate(R.layout.item,  parent, false));
+        return new ProductHolder(LayoutInflater.from(context).inflate(R.layout.item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProductHolder holder, int position) {
-
+        Product product_temp = items.get(position);
         holder.getProduct_name().setText(items.get(position).getName());
 //        holder.product_img.setImageResource(Integer.parseInt(items.get(position).getImage()));
         Glide.with(context)
                 .load(items.get(position).getImage())
                 .into(holder.getProduct_img());
-        holder.getProduct_price().setText(String.valueOf(items.get(position).getPrice() ));
+        if (product_temp.getDiscountP() == 0) {
+            holder.getProduct_price().setText(product_temp.getPrice() + ".VND");
+        } else {
+            SpannableString spannableString1 = new SpannableString(product_temp.getPrice() + ".VND");
+            spannableString1.setSpan(new StrikethroughSpan(), 0, spannableString1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            int finalprice = product_temp.getPrice() - (product_temp.getPrice() * product_temp.getDiscountP() / 100);
+            SpannableString spannableString2 = new SpannableString(finalprice + ".VND");
+            spannableString2.setSpan(new ForegroundColorSpan(Color.RED), 0, spannableString2.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            CharSequence combinedText = TextUtils.concat(spannableString1, " -> ", spannableString2);
+            holder.getProduct_price().setText(combinedText);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -54,10 +54,10 @@ import vn.zalopay.sdk.ZaloPayError;
 import vn.zalopay.sdk.ZaloPaySDK;
 import vn.zalopay.sdk.listeners.PayOrderListener;
 
-//import vn.zalopay.sdk.ZaloPayError;
-//import vn.zalopay.sdk.ZaloPaySDK;
-//import vn.zalopay.sdk.Environment;
-//import vn.zalopay.sdk.listeners.PayOrderListener;
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.Environment;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 public class CartFragment extends Fragment {
     String user_id = DataLogin.id1;
 
@@ -148,6 +148,7 @@ public class CartFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot productSnapshot) {
                         Map<String, Product> products = new HashMap<>();
+                        int cost=0;
                         for (DataSnapshot childSnapshot : productSnapshot.getChildren()) {
                             Product product = childSnapshot.getValue(Product.class);
                             products.put(product.getId(), product);
@@ -160,8 +161,14 @@ public class CartFragment extends Fragment {
                             if (product != null) {
                                 cart.setName(product.getName());
                                 cart.setImage(product.getImage());
-                                cart.setPrice(product.getPrice());
-                                double cost = product.getPrice()*cart.getQuantity();
+                                if(product.getDiscountP()==0){
+                                    cart.setPrice(product.getPrice());
+                                    cost = product.getPrice()*cart.getQuantity();
+                                }else{
+                                    int dCost = product.getPrice() - (product.getPrice()*product.getDiscountP()/100);
+                                    cart.setPrice(dCost);
+                                    cost = dCost*cart.getQuantity();
+                                }
                                 totalCost.addAndGet(cost);
                             }
                         }

@@ -17,10 +17,10 @@
         android:theme="@style/Theme.Clothes"
         tools:targetApi="31">
         <activity
-            android:name=".Cart.MapsActivity"
+            android:name=".Cart.Payment"
             android:exported="false" />
         <activity
-            android:name=".Cart.Payment"
+            android:name=".Cart.MapsActivity"
             android:exported="false" />
         <activity
             android:name=".Log.Login"
