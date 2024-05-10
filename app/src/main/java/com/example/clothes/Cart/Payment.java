@@ -1,24 +1,18 @@
 package com.example.clothes.Cart;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -55,7 +49,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -104,9 +97,6 @@ public class Payment extends AppCompatActivity {
     int fp=0;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    int PICK_IMAGE_REQUEST= 2020;
-    Uri filePath=null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -373,22 +363,14 @@ public class Payment extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(Payment.this, "Choose location", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(Payment.this, MapsActivity.class);
-                startActivityForResult(intent, 1);
+                chooseLocation();
             }
         });
 
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            String selectedAddress = data.getStringExtra("selectedAddress");
-            address.setText(selectedAddress);
-        }
-    }
+
     private void addToNewOrder(int fp, String method) {
         Query cartQuery = reference.orderByChild("user_id").equalTo(user_id);
 
@@ -471,6 +453,18 @@ public class Payment extends AppCompatActivity {
     }
 
     private void chooseLocation() {
+        try{
+            mapView.setVisibility(View.VISIBLE);
+            mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+            mapView.setBuiltInZoomControls(true);
+            mapView.setMultiTouchControls(true);
+            IMapController mapController = mapView.getController();
+            mapController.setZoom(14);
+            GeoPoint defaultLocation = new GeoPoint(10.84800, 106.78689);
+            mapController.setCenter(defaultLocation);
+        }catch(Exception e){
+            Toast.makeText(Payment.this, "Lỗi hiển thị map.",  Toast.LENGTH_LONG).show();
+        }
 
     }
 
