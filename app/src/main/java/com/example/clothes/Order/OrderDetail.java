@@ -116,6 +116,7 @@ public class OrderDetail extends AppCompatActivity {
         createAt.setText(or.getCreateAt());
         updateAt.setText(or.getUpdateAt());
         payment.setText(or.getPayment());
+        address.setText(or.getAddress());
         totalPrice.setText(or.getTotalPrice()+" VNĐ");
         String statuss = "";
         switch (or.getStatus()){
@@ -150,7 +151,6 @@ public class OrderDetail extends AppCompatActivity {
                 }
                 name.setText(us.getName());
                 phone.setText(us.getPhone());
-                address.setText(us.getAddress());
             }
 
             @Override
@@ -218,7 +218,7 @@ public class OrderDetail extends AppCompatActivity {
         sumP =0;
         for (importOrder io: listOrder) {
             sumP += io.getTotalPrice();
-            String data = "Sản phẩm: "+io.getName()+" - Đơn giá mua: "+ io.getPrice()
+            String data = "Sản phẩm: "+io.getName()+" - Giá sản phẩm: "+ io.getPrice()
                     +" VND\n Số lượng: ";
             for (String s: io.getSize_stock().keySet()){
                 data += (s+": "+String.valueOf(io.getSize_stock().get(s))+"  ");
@@ -226,7 +226,7 @@ public class OrderDetail extends AppCompatActivity {
             data += ("\n Tổng giá: "+ String.valueOf(io.getTotalPrice()));
             listShow.add(data);
         }
-        totalPrice.setText(String.valueOf(sumP));
+
         adapter = new ArrayAdapter(OrderDetail.this, android.R.layout.simple_list_item_1,listShow);
         showProduct.setAdapter(adapter);
     }
